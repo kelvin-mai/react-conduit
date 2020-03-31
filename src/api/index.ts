@@ -18,8 +18,15 @@ const request = Axios.create({
   baseURL,
 });
 
-export const setToken = (token: string) => {
-  request.defaults.headers.common['Authorization'] = `Token ${token}`;
+export const setToken = (token?: string) => {
+  if (!token) {
+    localStorage.removeItem('access_token');
+    request.defaults.headers.common['Authorization'] = undefined;
+  }
+  if (token) {
+    localStorage.setItem('access_token', token);
+    request.defaults.headers.common['Authorization'] = `Token ${token}`;
+  }
 };
 
 // auth

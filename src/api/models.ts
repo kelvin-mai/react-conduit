@@ -7,11 +7,13 @@ interface BaseEntity {
 }
 
 type Body<K extends string, T> = {
-  [S in K]: T & BaseEntity;
+  [S in K]: T;
 };
 
 export type RequestBody<K extends string, T> = Body<K, T>;
-export type ResponseData<K extends string, T> = AxiosResponse<Body<K, T>>;
+export type ResponseData<K extends string, T> = AxiosResponse<
+  Body<K, T & BaseEntity>
+>;
 
 export interface LoginDTO {
   email: string;
