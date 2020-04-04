@@ -9,7 +9,8 @@
     "overmind-react": "^24.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "react-use": "^13.27.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

@@ -1,7 +1,13 @@
 import { IConfig, createOvermind } from 'overmind';
 import { createHook } from 'overmind-react';
 
-const config = {};
+import * as api from '../api';
+import * as auth from './auth';
+
+const config = {
+  ...auth,
+  effects: api,
+};
 
 declare module 'overmind' {
   interface Config extends IConfig<typeof config> {}
