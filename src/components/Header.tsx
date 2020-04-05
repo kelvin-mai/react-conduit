@@ -30,7 +30,7 @@ export const Header = () => {
         </Link>
         <ul className='nav navbar-nav pull-xs-right'>
           {pageLinks.map(page => (
-            <NavLink {...page} />
+            <NavLink key={page.to} {...page} />
           ))}
         </ul>
       </div>

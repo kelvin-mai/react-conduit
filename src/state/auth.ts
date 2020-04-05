@@ -1,20 +1,41 @@
 import { IState, Derive, AsyncAction, Action } from 'overmind';
 
-import { AuthResponse, LoginDTO, RegisterDTO } from '../api/models';
+import {
+  AuthResponse,
+  LoginDTO,
+  RegisterDTO,
+  ProfileResponse,
+} from '../api/models';
 
 interface State extends IState {
-  currentUser: AuthResponse | null;
+  currentUser: AuthResponse | ProfileResponse | null;
   authenticating: boolean;
   authenticated: Derive<State, boolean>;
+  errors: string[];
 }
 
 export const state: State = {
   currentUser: null,
   authenticating: false,
   authenticated: state => Boolean(state.currentUser),
+  errors: [],
+};
+
+const initializeUser: AsyncAction = async ({ state, effects }) => {
+  const token = localStorage.getItem('access_token');
+  state.authenticating = true;
+  if (token) {
+    effects.setToken(token);
+    const {
+      data: { user },
+    } = await effects.getCurrentUser();
+    state.currentUser = user;
+  }
+  state.authenticating = false;
 };
 
 const login: AsyncAction<LoginDTO> = async ({ state, effects }, value) => {
+  state.errors = [];
   state.authenticating = true;
   try {
     const {
@@ -23,7 +44,9 @@ const login: AsyncAction<LoginDTO> = async ({ state, effects }, value) => {
     effects.setToken(user.token);
     state.currentUser = user;
   } catch (err) {
-    console.log(err);
+    state.errors = Object.keys(err.response.data.errors).flatMap(
+      key => `${key}: ${err.response.data.errors[key]}`,
+    );
     effects.setToken();
     state.currentUser = null;
   }
@@ -42,7 +65,9 @@ const register: AsyncAction<RegisterDTO> = async (
     effects.setToken(user.token);
     state.currentUser = user;
   } catch (err) {
-    console.log(err);
+    state.errors = Object.keys(err.response.data.errors).flatMap(
+      key => `${key}: ${err.response.data.errors[key]}`,
+    );
     effects.setToken();
     state.currentUser = null;
   }
@@ -58,4 +83,5 @@ export const actions = {
   login,
   register,
   logout,
+  initializeUser,
 };
