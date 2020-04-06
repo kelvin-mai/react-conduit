@@ -16,66 +16,66 @@ interface State extends IState {
 
 export const state: State = {
   currentUser: null,
-  authenticating: false,
+  authenticating: true,
   authenticated: state => Boolean(state.currentUser),
   errors: [],
 };
 
 const initializeUser: AsyncAction = async ({ state, effects }) => {
   const token = localStorage.getItem('access_token');
-  state.authenticating = true;
+  state.auth.authenticating = true;
   if (token) {
     effects.setToken(token);
     const {
       data: { user },
     } = await effects.getCurrentUser();
-    state.currentUser = user;
+    state.auth.currentUser = user;
   }
-  state.authenticating = false;
+  state.auth.authenticating = false;
 };
 
 const login: AsyncAction<LoginDTO> = async ({ state, effects }, value) => {
-  state.errors = [];
-  state.authenticating = true;
+  state.auth.errors = [];
+  state.auth.authenticating = true;
   try {
     const {
       data: { user },
     } = await effects.login({ user: value });
     effects.setToken(user.token);
-    state.currentUser = user;
+    state.auth.currentUser = user;
   } catch (err) {
-    state.errors = Object.keys(err.response.data.errors).flatMap(
+    state.auth.errors = Object.keys(err.response.data.errors).flatMap(
       key => `${key}: ${err.response.data.errors[key]}`,
     );
     effects.setToken();
-    state.currentUser = null;
+    state.auth.currentUser = null;
   }
-  state.authenticating = false;
+  state.auth.authenticating = false;
 };
 
 const register: AsyncAction<RegisterDTO> = async (
   { state, effects },
   value,
 ) => {
-  state.authenticating = true;
+  state.auth.authenticating = true;
   try {
     const {
       data: { user },
     } = await effects.register({ user: value });
     effects.setToken(user.token);
-    state.currentUser = user;
+    state.auth.currentUser = user;
   } catch (err) {
-    state.errors = Object.keys(err.response.data.errors).flatMap(
+    state.auth.errors = Object.keys(err.response.data.errors).flatMap(
       key => `${key}: ${err.response.data.errors[key]}`,
     );
     effects.setToken();
-    state.currentUser = null;
+    state.auth.currentUser = null;
   }
-  state.authenticating = false;
+  state.auth.authenticating = false;
 };
 
 const logout: Action = ({ state, effects }) => {
-  state.currentUser = null;
+  state.auth.currentUser = null;
   effects.setToken();
 };
 

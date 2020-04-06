@@ -7,7 +7,9 @@ interface Props {
 }
 
 export const AuthForm: FunctionComponent<Props> = ({ auth }) => {
-  const { actions } = useOvermind();
+  const {
+    actions: { auth: actions },
+  } = useOvermind();
   const handleSubmit = auth === 'register' ? actions.register : actions.login;
   return (
     <Formik

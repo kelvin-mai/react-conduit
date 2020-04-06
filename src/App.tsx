@@ -5,6 +5,8 @@ import { Router, RouteComponentProps } from '@reach/router';
 import { Layout } from './components/Layout';
 import { Auth } from './pages/Auth';
 import { useOvermind } from './state';
+import { Settings } from './pages/Settings';
+import { Profile } from './pages/Profile';
 
 export const Temp: FunctionComponent<RouteComponentProps> = () => (
   <div>Hello World</div>
@@ -12,15 +14,19 @@ export const Temp: FunctionComponent<RouteComponentProps> = () => (
 
 export const App = () => {
   const {
-    actions: { initializeUser },
+    actions: {
+      auth: { initializeUser },
+    },
   } = useOvermind();
   useMount(initializeUser);
   return (
     <Layout>
       <Router>
+        <Temp path='/' />
         <Auth path='/login' auth='login' />
         <Auth path='/register' auth='register' />
-        <Temp default />
+        <Settings path='/settings' />
+        <Profile path='/:username' />
       </Router>
     </Layout>
   );

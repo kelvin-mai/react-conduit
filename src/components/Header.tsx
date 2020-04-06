@@ -17,7 +17,9 @@ const authenticatedPageLinks: NavLinkProps[] = [
 
 export const Header = () => {
   const {
-    state: { authenticated },
+    state: {
+      auth: { authenticated },
+    },
   } = useOvermind();
   const pageLinks = authenticated
     ? authenticatedPageLinks

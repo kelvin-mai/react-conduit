@@ -9,7 +9,9 @@ interface Props extends RouteComponentProps {
 
 export const Auth: FunctionComponent<Props> = ({ auth }) => {
   const {
-    state: { authenticated, authenticating, errors },
+    state: {
+      auth: { authenticated, authenticating, errors },
+    },
   } = useOvermind();
   const header = auth === 'login' ? 'Sign in' : 'Sign up';
   const link = auth === 'login' ? '/register' : '/login';
