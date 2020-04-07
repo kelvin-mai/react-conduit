@@ -56,12 +56,12 @@ export const getUser = (
 
 export const followUser = (
   username: string,
-): Promise<ResponseData<'user', ProfileResponse>> =>
+): Promise<ResponseData<'profile', ProfileResponse>> =>
   request.post(`/profiles/${username}/follow`);
 
 export const unfollowUser = (
   username: string,
-): Promise<ResponseData<'user', ProfileResponse>> =>
+): Promise<ResponseData<'profile', ProfileResponse>> =>
   request.delete(`/profiles/${username}/follow`);
 
 // articles
