@@ -2,6 +2,8 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { RouteComponentProps } from '@reach/router';
 
 import { useOvermind } from '../state';
+import { ProfileButtonType, ProfileButton } from '../components/ProfileButton';
+import { ProfileResponse } from '../api/models';
 
 type Props = RouteComponentProps<{ username: string }>;
 
@@ -20,9 +22,11 @@ export const Profile: FunctionComponent<Props> = ({ username }) => {
       getUser(username);
     }
   }, [username]);
-  let user;
+  let user: ProfileResponse | null = null;
+  let isCurrentUser = false;
   if (username && currentUser?.username === username) {
-    user = currentUser;
+    user = currentUser as ProfileResponse;
+    isCurrentUser = true;
   } else if (username) {
     user = users[username];
   }
@@ -32,14 +36,24 @@ export const Profile: FunctionComponent<Props> = ({ username }) => {
         <div className='container'>
           <div className='row'>
             <div className='col-xs-12 col-md-10 offset-md-1'>
-              {loading ? (
-                <h4>loading</h4>
-              ) : (
+              {!loading && user ? (
                 <>
                   {user?.image && <img src={user.image} className='user-img' />}
                   <h4>{user?.username}</h4>
                   <p>{user?.bio}</p>
+                  <ProfileButton
+                    username={user?.username}
+                    type={
+                      isCurrentUser
+                        ? ProfileButtonType.settings
+                        : user?.following
+                        ? ProfileButtonType.unfollow
+                        : ProfileButtonType.follow
+                    }
+                  />
                 </>
+              ) : (
+                <h4>Loading...</h4>
               )}
             </div>
           </div>

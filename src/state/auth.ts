@@ -6,6 +6,7 @@ import {
   RegisterDTO,
   ProfileResponse,
 } from '../api/models';
+import { formatErrors } from '../utils/errors';
 
 interface State extends IState {
   currentUser: AuthResponse | ProfileResponse | null;
@@ -44,9 +45,7 @@ const login: AsyncAction<LoginDTO> = async ({ state, effects }, value) => {
     effects.setToken(user.token);
     state.auth.currentUser = user;
   } catch (err) {
-    state.auth.errors = Object.keys(err.response.data.errors).flatMap(
-      key => `${key}: ${err.response.data.errors[key]}`,
-    );
+    state.auth.errors = formatErrors(err.response.data);
     effects.setToken();
     state.auth.currentUser = null;
   }
@@ -65,9 +64,7 @@ const register: AsyncAction<RegisterDTO> = async (
     effects.setToken(user.token);
     state.auth.currentUser = user;
   } catch (err) {
-    state.auth.errors = Object.keys(err.response.data.errors).flatMap(
-      key => `${key}: ${err.response.data.errors[key]}`,
-    );
+    state.auth.errors = formatErrors(err.response.data);
     effects.setToken();
     state.auth.currentUser = null;
   }
