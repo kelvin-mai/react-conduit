@@ -12,6 +12,7 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-use": "^13.27.1",
+    "use-query-params": "^0.6.0",
     "yup": "^0.28.3"
   },
   "devDependencies": {

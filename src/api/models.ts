@@ -73,6 +73,7 @@ export interface ArticleResponse {
   favorited: boolean | null;
   favoritesCount: number;
   author: ProfileResponse;
+  createdAt: string;
 }
 
 export interface CommentDTO {

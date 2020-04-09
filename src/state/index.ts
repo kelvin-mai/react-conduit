@@ -5,12 +5,13 @@ import { createHook } from 'overmind-react';
 import * as api from '../api';
 import * as auth from './auth';
 import * as profile from './profile';
+import * as articles from './articles';
 
 const config = merge(
   {
     effects: api,
   },
-  namespaced({ auth, profile }),
+  namespaced({ auth, profile, articles }),
 );
 
 declare module 'overmind' {
