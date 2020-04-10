@@ -95,6 +95,14 @@ export const getArticlesByTag = (
     ResponseData<'articlesCount', number>
 > => request.get(`/articles?tag=${tag}&${paginate(5, page)}`);
 
+export const getArticlesByFavorited = (
+  username: string,
+  page?: number,
+): Promise<
+  ResponseData<'articles', ArticleResponse[]> &
+    ResponseData<'articlesCount', number>
+> => request.get(`/articles?favorited=${username}&${paginate(5, page)}`);
+
 export const createArticle = (
   body: RequestBody<'article', ArticleDTO>,
 ): Promise<ResponseData<'article', ArticleResponse>> =>
