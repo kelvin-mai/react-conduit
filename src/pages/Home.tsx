@@ -9,19 +9,23 @@ import { ArticleList } from '../components/ArticleList';
 
 export const Home: FunctionComponent<RouteComponentProps> = () => {
   const [tag] = useQueryParam('tag', StringParam);
-  const [page] = useQueryParam('page', NumberParam);
+  const [page, setPage] = useQueryParam('page', NumberParam);
   const {
     state: {
       articles: { tags, list, loading },
     },
     actions: {
-      articles: { setCurrentPage, loadTags },
+      articles: { loadTags, setCurrentPage },
     },
   } = useOvermind();
   useMount(() => tags.length < 1 && loadTags());
   useEffect(() => {
-    setCurrentPage({ type: 'all', page: page || 0 });
-  }, [tag]);
+    setCurrentPage(
+      tag
+        ? { type: 'tag', page: page || 0, tag }
+        : { type: 'all', page: page || 0 },
+    );
+  }, [tag, page]);
   return (
     <div className='home-page'>
       <div className='banner'>

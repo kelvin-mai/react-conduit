@@ -6,15 +6,23 @@ import {
   Action,
   pipe,
   mutate,
+  when,
+  noop,
 } from 'overmind';
 
 import { arrayToMap, appendToMap } from '../utils/hashmap';
 import { formatErrors } from '../utils/errors';
 import { ArticleResponse } from '../api/models';
 
-type CurrentFeed = { type: string; page: number; tag?: string } & (
-  | { type: 'all' | 'favorite' | 'user'; page: number }
+type CurrentFeed = {
+  type: string;
+  page: number;
+  tag?: string;
+  author?: string;
+} & (
+  | { type: 'all' | 'favorite' | 'feed'; page: number }
   | { type: 'tag'; page: number; tag: string }
+  | { type: 'author'; page: number; author: string }
 );
 
 interface State extends IState {
@@ -28,7 +36,8 @@ interface State extends IState {
   feeds: {
     all: Partial<Array<string[]>>;
     favorite: Partial<Array<string[]>>;
-    user: Partial<Array<string[]>>;
+    feed: Partial<Array<string[]>>;
+    author: Partial<Array<string[]>>;
     tag: Partial<Array<string[]>>;
     current: CurrentFeed;
   };
@@ -40,7 +49,7 @@ export const state: State = {
   errors: [],
   list: state => {
     const { type, page } = state.feeds.current;
-    if (['all', 'user', 'favorite', 'tag'].includes(type)) {
+    if (['all', 'feed', 'author', 'favorite', 'tag'].includes(type)) {
       return state.feeds[type][page]?.map(slug => state.db[slug]) || [];
     }
     return [];
@@ -48,8 +57,9 @@ export const state: State = {
   db: {},
   feeds: {
     all: [[]],
+    feed: [[]],
     favorite: [[]],
-    user: [[]],
+    author: [[]],
     tag: [[]],
     current: {
       type: 'all',
@@ -58,11 +68,67 @@ export const state: State = {
   },
 };
 
+const loadArticles: AsyncAction<CurrentFeed> = async (
+  { state, effects },
+  { type, page, tag, author },
+) => {
+  const request = {
+    all: () => effects.getAllArticles(page),
+    feed: () => effects.getFeed(page),
+    author: () => author && effects.getArticlesByAuthor(author, page),
+    favorite: () =>
+      state.auth.currentUser?.username &&
+      effects.getArticlesByFavorited(state.auth.currentUser.username, page),
+    tag: () => tag && effects.getArticlesByTag(tag, page),
+  }[type];
+  state.articles.loading = true;
+  try {
+    const response = await request();
+    if (response) {
+      const {
+        data: { articles },
+      } = response;
+      state.articles.db = appendToMap(
+        state.articles.db,
+        arrayToMap(articles, 'slug'),
+      );
+      state.articles.feeds[type][page] = articles.map(article => article.slug);
+    }
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
 const setCurrentFeed: Action<CurrentFeed> = ({ state }, value) => {
   state.articles.feeds.current = value;
 };
 
-const setCurrentPage: Operator<CurrentFeed> = pipe(mutate(setCurrentFeed));
+const resetFeed: Action<CurrentFeed> = ({ state }, { type }) => {
+  state.articles.feeds[type] = [[]];
+};
+
+const setCurrentPage: Operator<CurrentFeed> = pipe(
+  when(({ state }, { tag }) => state.articles.feeds.current.tag !== tag, {
+    true: mutate(resetFeed),
+    false: mutate(noop),
+  }),
+  when(
+    ({ state }, { author }) => state.articles.feeds.current.author !== author,
+    {
+      true: mutate(resetFeed),
+      false: mutate(noop),
+    },
+  ),
+  mutate(setCurrentFeed),
+  when(
+    ({ state }, { type, page }) => !state.articles.feeds[type][page]?.length,
+    {
+      true: mutate(loadArticles),
+      false: mutate(noop),
+    },
+  ),
+);
 
 const loadTags: AsyncAction = async ({ state, effects }) => {
   try {
