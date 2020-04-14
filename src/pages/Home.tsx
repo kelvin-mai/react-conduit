@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { useMount } from 'react-use';
 import { RouteComponentProps } from '@reach/router';
-import { useQueryParam, StringParam } from 'use-query-params';
+import { useQueryParam, StringParam, NumberParam } from 'use-query-params';
 
 import { useOvermind } from '../state';
 import { Tags } from '../components/Tags';
@@ -9,21 +9,18 @@ import { ArticleList } from '../components/ArticleList';
 
 export const Home: FunctionComponent<RouteComponentProps> = () => {
   const [tag] = useQueryParam('tag', StringParam);
+  const [page] = useQueryParam('page', NumberParam);
   const {
     state: {
       articles: { tags, list, loading },
     },
     actions: {
-      articles: { loadTags, loadArticles, loadArticlesByTags },
+      articles: { setCurrentPage, loadTags },
     },
   } = useOvermind();
   useMount(() => tags.length < 1 && loadTags());
   useEffect(() => {
-    if (tag) {
-      loadArticlesByTags({ tag });
-    } else {
-      loadArticles(0);
-    }
+    setCurrentPage({ type: 'all', page: page || 0 });
   }, [tag]);
   return (
     <div className='home-page'>
