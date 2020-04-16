@@ -14,7 +14,7 @@ import { arrayToMap, appendToMap } from '../utils/hashmap';
 import { formatErrors } from '../utils/errors';
 import { ArticleResponse } from '../api/models';
 
-type CurrentFeed = {
+export type CurrentFeed = {
   type: string;
   page: number;
   tag?: string;
@@ -141,7 +141,41 @@ const loadTags: AsyncAction = async ({ state, effects }) => {
   }
 };
 
+const favoriteArticle: AsyncAction<string> = async (
+  { state, effects },
+  slug,
+) => {
+  state.articles.loading = true;
+  try {
+    const {
+      data: { article },
+    } = await effects.favoriteArticle(slug);
+    state.articles.db[slug] = article;
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
+const unfavoriteArticle: AsyncAction<string> = async (
+  { state, effects },
+  slug,
+) => {
+  state.articles.loading = true;
+  try {
+    const {
+      data: { article },
+    } = await effects.unfavoriteArticle(slug);
+    state.articles.db[slug] = article;
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
 export const actions = {
   loadTags,
   setCurrentPage,
+  favoriteArticle,
+  unfavoriteArticle,
 };
