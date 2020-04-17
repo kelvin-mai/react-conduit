@@ -68,6 +68,11 @@ export const unfollowUser = (
 const paginate = (count: number, page?: number) =>
   `limit=${count}&offset=${page ? page * count : 0}`;
 
+export const getArticle = (
+  slug: string,
+): Promise<ResponseData<'article', ArticleResponse>> =>
+  request.get(`/articles/${slug}`);
+
 export const getAllArticles = (
   page?: number,
 ): Promise<
@@ -82,9 +87,7 @@ export const getFeed = (
 ): Promise<
   ResponseData<'articles', ArticleResponse[]> &
     ResponseData<'articlesCount', number>
-> => {
-  return request.get(`/articles/feed?${paginate(10, page)}`);
-};
+> => request.get(`/articles/feed?${paginate(10, page)}`);
 
 export const getArticlesByAuthor = (
   username: string,

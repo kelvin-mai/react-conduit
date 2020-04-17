@@ -68,6 +68,19 @@ export const state: State = {
   },
 };
 
+const loadArticle: AsyncAction<string> = async ({ state, effects }, slug) => {
+  state.articles.loading = true;
+  try {
+    const {
+      data: { article },
+    } = await effects.getArticle(slug);
+    state.articles.db[slug] = article;
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
 const loadArticles: AsyncAction<CurrentFeed> = async (
   { state, effects },
   { type, page, tag, author },
@@ -174,6 +187,7 @@ const unfavoriteArticle: AsyncAction<string> = async (
 };
 
 export const actions = {
+  loadArticle,
   loadTags,
   setCurrentPage,
   favoriteArticle,

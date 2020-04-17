@@ -27,7 +27,7 @@ export const Header = () => {
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
-        <Link className='navbar-brand' to='index.html'>
+        <Link className='navbar-brand' to='/'>
           conduit
         </Link>
         <ul className='nav navbar-nav pull-xs-right'>
