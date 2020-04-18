@@ -78,9 +78,7 @@ export const getAllArticles = (
 ): Promise<
   ResponseData<'articles', ArticleResponse[]> &
     ResponseData<'articlesCount', number>
-> => {
-  return request.get(`/articles?${paginate(10, page)}`);
-};
+> => request.get(`/articles?${paginate(10, page)}`);
 
 export const getFeed = (
   page?: number,
