@@ -3,7 +3,6 @@ import { Link } from '@reach/router';
 import { NavLinkProps, NavLink } from './NavLink';
 import { useOvermind } from '../state';
 
-// TODO: temporary page links
 const unauthenticatedPageLinks: NavLinkProps[] = [
   { to: '/', label: 'Home' },
   { to: '/register', label: 'Sign up' },
@@ -11,18 +10,21 @@ const unauthenticatedPageLinks: NavLinkProps[] = [
 ];
 const authenticatedPageLinks: NavLinkProps[] = [
   { to: '/', label: 'Home' },
-  { to: '/new', label: 'New Post', icon: 'ion-compose' },
+  { to: '/editor', label: 'New Article', icon: 'ion-compose' },
   { to: '/settings', label: 'Settings', icon: 'ion-gear-a' },
 ];
 
 export const Header = () => {
   const {
     state: {
-      auth: { authenticated },
+      auth: { authenticated, currentUser },
     },
   } = useOvermind();
   const pageLinks = authenticated
-    ? authenticatedPageLinks
+    ? [
+        ...authenticatedPageLinks,
+        { to: `/${currentUser?.username}`, label: `${currentUser?.username}` },
+      ]
     : unauthenticatedPageLinks;
   return (
     <nav className='navbar navbar-light'>

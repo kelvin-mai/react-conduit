@@ -12,7 +12,7 @@ import {
 
 import { arrayToMap, appendToMap } from '../utils/hashmap';
 import { formatErrors } from '../utils/errors';
-import { ArticleResponse } from '../api/models';
+import { ArticleResponse, ArticleDTO } from '../api/models';
 
 export type CurrentFeed = {
   type: string;
@@ -186,10 +186,54 @@ const unfavoriteArticle: AsyncAction<string> = async (
   state.articles.loading = false;
 };
 
+const createArticle: AsyncAction<ArticleDTO> = async (
+  { state, effects },
+  value,
+) => {
+  state.articles.loading = true;
+  try {
+    const {
+      data: { article },
+    } = await effects.createArticle({ article: value });
+    state.articles.db[article.slug] = article;
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
+const updateArticle: AsyncAction<{ value: ArticleDTO; slug: string }> = async (
+  { state, effects },
+  { value, slug },
+) => {
+  state.articles.loading = true;
+  try {
+    const {
+      data: { article },
+    } = await effects.updateArticle(slug, { article: value });
+    state.articles.db[slug] = article;
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  state.articles.loading = false;
+};
+
+const deleteArticle: AsyncAction<string> = async ({ state, effects }, slug) => {
+  try {
+    await effects.deleteArticle(slug);
+  } catch (err) {
+    state.articles.errors = formatErrors(err.response.data);
+  }
+  delete state.articles.db[slug];
+};
+
 export const actions = {
   loadArticle,
   loadTags,
   setCurrentPage,
   favoriteArticle,
   unfavoriteArticle,
+  createArticle,
+  updateArticle,
+  deleteArticle,
 };

@@ -10,6 +10,7 @@ import { Settings } from './pages/Settings';
 import { Profile } from './pages/Profile';
 import { Home } from './pages/Home';
 import { Article } from './pages/Article';
+import { Editor } from './pages/Editor';
 
 export const App = () => {
   const {
@@ -26,6 +27,8 @@ export const App = () => {
           <Auth path='/login' auth='login' />
           <Auth path='/register' auth='register' />
           <Settings path='/settings' />
+          <Editor path='/editor' />
+          <Editor path='/editor/:slug' />
           <Article path='/articles/:slug' />
           <Profile path='/:username' />
         </Router>
