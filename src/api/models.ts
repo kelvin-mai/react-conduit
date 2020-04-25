@@ -81,6 +81,8 @@ export interface CommentDTO {
 }
 
 export interface CommentResponse {
+  id: string;
   body: string;
   author: ProfileResponse;
+  createdAt: string;
 }

@@ -6,12 +6,13 @@ import * as api from '../api';
 import * as auth from './auth';
 import * as profile from './profile';
 import * as articles from './articles';
+import * as comments from './comment';
 
 const config = merge(
   {
     effects: api,
   },
-  namespaced({ auth, profile, articles }),
+  namespaced({ auth, profile, articles, comments }),
 );
 
 declare module 'overmind' {

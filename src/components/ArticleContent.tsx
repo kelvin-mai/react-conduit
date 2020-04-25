@@ -4,6 +4,7 @@ import { ArticleActions } from './ArticleActions';
 import { ArticleResponse } from '../api/models';
 import { useOvermind } from '../state';
 import { EditActions } from './EditActions';
+import { CommentList } from './CommentList';
 
 interface Props extends ArticleResponse {}
 
@@ -50,7 +51,9 @@ export const ArticleContent: FunctionComponent<Props> = ({
         <hr />
         <div className='article-actions'>{actionButtons}</div>
         <div className='row'>
-          <div className='col-xs-12 col-md-8 offset-md-2'>{/* comments */}</div>
+          <div className='col-xs-12 col-md-8 offset-md-2'>
+            <CommentList slug={slug} />
+          </div>
         </div>
       </div>
     </>

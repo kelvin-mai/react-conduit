@@ -140,7 +140,7 @@ export const unfavoriteArticle = (
 // comments
 export const getArticlesComments = (
   slug: string,
-): Promise<ResponseData<'comment', CommentResponse[]>> =>
+): Promise<ResponseData<'comments', CommentResponse[]>> =>
   request.get(`/articles/${slug}/comments`);
 
 export const createComment = (
